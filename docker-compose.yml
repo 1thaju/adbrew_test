@@ -1,34 +1,49 @@
-version: '2'
 services:
   api:
-    build: .
+    build:
+      context: .
     container_name: api
-    command: bash -c "cd /src/rest && python manage.py runserver 0.0.0.0:8000"
+    command: python rest/manage.py runserver 0.0.0.0:8000
+    environment:
+      ENV_TYPE: staging
+      MONGO_HOST: mongo
+      MONGO_PORT: "27017"
+    depends_on:
+      mongo:
+        condition: service_healthy
     ports:
       - "8000:8000"
-    links:
-      - mongo
     volumes:
-      - ${ADBREW_CODEBASE_PATH}/tmp:/tmp
-      - ${ADBREW_CODEBASE_PATH}:/src
+      - ./src:/src
+      - ./src/tmp:/tmp
 
   app:
-    build: .
+    image: node:14-bullseye
     container_name: app
-    command: bash -c "cd /src/app && yarn install && yarn start"
+    working_dir: /src/app
+    command: sh -c "yarn install && yarn start"
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
     ports:
       - "3000:3000"
     volumes:
-      - ${ADBREW_CODEBASE_PATH}:/src
+      - ./src:/src
+      - app_node_modules:/src/app/node_modules
 
   mongo:
-    build: .
+    image: mongo:4.4
     container_name: mongo
-    restart: always
+    restart: unless-stopped
+    command: ["mongod", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
-      - ${ADBREW_CODEBASE_PATH}/db/:/data/db
-    command: /usr/bin/mongod --bind_ip 0.0.0.0
+      - ./src/db:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongo --quiet --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
-    
+volumes:
+  app_node_modules:
