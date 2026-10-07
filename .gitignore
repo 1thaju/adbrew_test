@@ -1,5 +1,10 @@
 src/db/
 src/tmp/
-node_modules/
+**/node_modules/
 __pycache__/
-*.pyc
+*.py[cod]
+.env
+.env.*
+!.env.example
+coverage/
+src/app/build/

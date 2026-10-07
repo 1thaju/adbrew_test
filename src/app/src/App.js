@@ -1,27 +1,25 @@
 import './App.css';
-import logo from './logo.svg';
-
+import { TodoForm } from './components/TodoForm';
+import { TodoList } from './components/TodoList';
+import { useTodos } from './hooks/useTodos';
 
 export function App() {
+  const { todos, loading, error, submitting, addTodo } = useTodos();
+
   return (
     <div className="App">
-      <div>
-        <h1>List of TODOs</h1>
-        <li>Learn Docker</li>
-        <li>Learn React</li>
-      </div>
-      <div>
-        <h1>Create a ToDo</h1>
-        <form>
-          <div>
-            <label for="todo">ToDo: </label>
-            <input type="text" />
-          </div>
-          <div style={{"marginTop": "5px"}}>
-            <button>Add ToDo!</button>
-          </div>
-        </form>
-      </div>
+      <main className="todo-app">
+        <h1>To-dos</h1>
+        <TodoForm
+          submitting={submitting}
+          error={error}
+          onAddTodo={addTodo}
+        />
+        <section aria-labelledby="todo-list-heading">
+          <h2 id="todo-list-heading">Your list</h2>
+          <TodoList todos={todos} loading={loading} error={error} />
+        </section>
+      </main>
     </div>
   );
 }
