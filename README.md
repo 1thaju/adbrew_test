@@ -13,8 +13,8 @@ A small full-stack todo app: a **Django REST** API backed by **MongoDB**, and a 
 Prerequisite: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 ```sh
-git clone <this-repository-url>
-cd <repository-folder>
+git clone https://github.com/1thaju/adbrew_test.git
+cd adbrew_test
 docker compose up -d
 ```
 
